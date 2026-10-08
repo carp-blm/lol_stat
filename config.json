@@ -1,0 +1,42 @@
+{
+  "platform": "kr",
+  "region": "asia",
+  "queue": 420,
+  "patch": "current",
+  "lookback_days": 14,
+  "retention_days": 42,
+  "refresh_hours": 48,
+  "max_new_matches": 600,
+  "max_stored_matches": 10000,
+  "max_players": 120,
+  "max_requests": 1800,
+  "max_runtime_seconds": 2100,
+  "request_interval_seconds": 1.25,
+  "min_match_seconds": 900,
+  "min_matchup_games": 30,
+  "min_level_observations": 30,
+  "min_build_games": 10,
+  "fdr_alpha": 0.05,
+  "fdr_method": "by",
+  "starting_items_before_ms": 90000,
+  "core_min_gold": 1500,
+  "core_include": [],
+  "core_exclude": [],
+  "discovery_tiers": [
+    "IRON",
+    "BRONZE",
+    "SILVER",
+    "GOLD",
+    "PLATINUM",
+    "EMERALD",
+    "DIAMOND"
+  ],
+  "discovery_divisions": [
+    "I",
+    "II",
+    "III",
+    "IV"
+  ],
+  "github_repository": "carp-blm/lol_stat",
+  "poll_seconds": 60
+}

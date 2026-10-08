@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="라인별로 기록하고 공유하는 나만의 리그 오브 레전드 챔피언 상성표">
+<meta name="color-scheme" content="dark">
+<title>상성노트 · 리그 오브 레전드</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23111822'/%3E%3Cpath d='M8 8h7v7H8zm9 9h7v7h-7zM8 20h7v4H8zm9-12h7v4h-7z' fill='%23e7ba6b'/%3E%3C/svg%3E">
+<style>__CSS__</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<dialog id="choice-dialog" aria-labelledby="choice-title"><form method="dialog"><button class="dialog-close" aria-label="닫기">×</button><div id="choice-content"></div></form></dialog>
+<input id="import-file" type="file" accept="application/json,.json" hidden>
+<noscript>상성노트를 사용하려면 브라우저에서 JavaScript를 허용해 주세요.</noscript>
+<script type="application/json" id="catalog">__CATALOG__</script>
+<script type="application/json" id="board-data">__BOARD_DATA__</script>
+<script type="application/json" id="site-data">__PUBLIC_DATA__</script>
+<script type="application/json" id="runtime-data">{"publisher":false}</script>
+<dialog id="stats-dialog" aria-labelledby="stats-title"><button type="button" id="stats-close" class="dialog-close" aria-label="상세 닫기">×</button><div id="stats-content"></div></dialog>
+<script>__JAVASCRIPT__</script>
+</body>
+</html>

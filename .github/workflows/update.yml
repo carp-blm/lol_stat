@@ -1,0 +1,103 @@
+name: Update and deploy
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '37 3 * * *'
+  workflow_dispatch:
+    inputs:
+      refresh:
+        description: Riot 경기 데이터를 지금 갱신
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: counter-note-pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify public repository
+        env:
+          PRIVATE: ${{ github.event.repository.private }}
+        run: |
+          if [ "$PRIVATE" = "true" ]; then
+            echo 'This zero-cost configuration requires a public repository.'
+            exit 1
+          fi
+      - name: Python tests
+        run: python -m unittest discover -s tests -v
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Frontend behavior tests
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          python tests/build_ui_fixture.py
+          npm test
+      - uses: actions/cache/restore@v4
+        id: restore
+        with:
+          path: |
+            data/matches.sqlite3
+            data/catalog
+          key: counter-note-v1-${{ runner.os }}-${{ hashFiles('config.json', 'counter_note/extract.py') }}-${{ github.run_id }}
+          restore-keys: |
+            counter-note-v1-${{ runner.os }}-${{ hashFiles('config.json', 'counter_note/extract.py') }}-
+      - name: Update Riot data when due
+        env:
+          RIOT_API_KEY: ${{ secrets.RIOT_API_KEY }}
+          RIOT_SEED_PUUIDS: ${{ secrets.RIOT_SEED_PUUIDS }}
+          RIOT_SEED_IDS: ${{ secrets.RIOT_SEED_IDS }}
+          EVENT: ${{ github.event_name }}
+          FORCE: ${{ inputs.refresh }}
+        run: |
+          if [ -z "$RIOT_API_KEY" ]; then
+            if [ "$EVENT" = "push" ]; then
+              echo '::warning::RIOT_API_KEY is missing. Publishing the prototype without collected statistics.'
+            else
+              echo '::error::Set the RIOT_API_KEY repository secret.'
+              exit 1
+            fi
+          elif [ "$EVENT" = "workflow_dispatch" ] && [ "$FORCE" = "true" ]; then
+            python -m counter_note refresh --force
+          else
+            python -m counter_note refresh
+          fi
+      - name: Update official Korean catalog
+        run: python -m counter_note catalog
+      - name: Build static website
+        run: python -m counter_note build
+      - uses: actions/cache/save@v4
+        with:
+          path: |
+            data/matches.sqlite3
+            data/catalog
+          key: counter-note-v1-${{ runner.os }}-${{ hashFiles('config.json', 'counter_note/extract.py') }}-${{ github.run_id }}
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+          retention-days: 1
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

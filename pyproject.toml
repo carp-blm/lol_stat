@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "counter-note"
+version = "3.0.0"
+description = "Riot Match-V5 기반 상성 통계와 무료 정적 배포 도구"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+counter-note = "counter_note.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["counter_note*"]

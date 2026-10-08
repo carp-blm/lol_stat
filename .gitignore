@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.env
+.env.*
+!.env.example
+data/*.sqlite*
+data/*.lock
+data/catalog/item-*.json
+data/catalog/current.json
+data/catalog/champion-*.json
+!data/catalog/champion-16.19.1.json
+site/
+test-results/
+node_modules/
