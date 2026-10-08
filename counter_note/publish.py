@@ -151,6 +151,9 @@ def build_site(root):
     temporary.replace(directory / "index.html")
     write_json(directory / "release.json", {"revision": digest, "updatedAt": metadata["updatedAt"], "publishedAt": now})
     (directory / ".nojekyll").touch()
+    verification = root / "riot.txt"
+    if verification.is_file():
+        shutil.copyfile(verification, directory / "riot.txt")
     releases = directory / "data" / "releases"
     if releases.exists():
         old = sorted((p for p in releases.iterdir() if p.is_dir() and re.fullmatch(r"[0-9a-f]{20}", p.name)), key=lambda p: p.stat().st_mtime, reverse=True)
