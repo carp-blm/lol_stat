@@ -91,13 +91,18 @@ def aggregate_pair(records, config):
 
 
 def aggregate(records, config):
+    from .recommendations import count_choices, recommendation_pair
     grouped = defaultdict(list)
+    champion_records = defaultdict(list)
     for record in records:
         grouped[(record["lane"], record["enemy"], record["own"])].append(record)
+        champion_records[(record["lane"], record["own"])].append(record)
+    overall = {key: count_choices(rows) for key, rows in champion_records.items()}
     board = {"schemaVersion": 2, "id": "counter-note-published-v3", "matchups": {}, "earlyDisadvantage": {}, "tiers": {}, "rosterSort": "tier"}
     details, index = {}, {}
     for (lane, enemy, own), rows in sorted(grouped.items()):
         result = aggregate_pair(rows, config)
+        result["recommendations"] = recommendation_pair(rows, overall[(lane, own)], config)
         details.setdefault(lane, {}).setdefault(enemy, {})[own] = result
         index.setdefault(lane, {}).setdefault(enemy, {})[own] = {k: result[k] for k in ("games", "winRate", "category", "early", "sufficient")}
         if result["category"]:

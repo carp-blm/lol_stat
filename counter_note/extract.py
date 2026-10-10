@@ -1,6 +1,7 @@
 from collections import Counter
 from .catalog import core_item_ids
 from .config import LANES
+from .choices import extract_choices
 
 
 def events_of(timeline, duration_ms):
@@ -120,5 +121,6 @@ def extract_match(match, timeline, champions, items, config):
                 levels[str(level)] = {"outcome": outcome, "source": source}
             solo = sum(1 for e in events if e.get("type") == "CHAMPION_KILL" and e["timestamp"] < 900000 and e.get("killerId") == pid and e.get("victimId") == eid and not e.get("assistingParticipantIds", []))
             against = sum(1 for e in events if e.get("type") == "CHAMPION_KILL" and e["timestamp"] < 900000 and e.get("killerId") == eid and e.get("victimId") == pid and not e.get("assistingParticipantIds", []))
-            records.append({"lane": lane, "own": known[own["championId"]], "enemy": known[enemy["championId"]], "win": own["win"], "levels": levels, "solo": solo, "soloAgainst": against, "builds": item_build(pid, events, items, core_ids, config["starting_items_before_ms"])})
+            choices, choice_status = extract_choices(own, known[own["championId"]], events)
+            records.append({"lane": lane, "own": known[own["championId"]], "enemy": known[enemy["championId"]], "win": own["win"], "levels": levels, "solo": solo, "soloAgainst": against, "builds": item_build(pid, events, items, core_ids, config["starting_items_before_ms"]), "choices": choices, "choiceStatus": choice_status})
     return records

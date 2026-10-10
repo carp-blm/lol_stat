@@ -60,9 +60,9 @@ jobs:
           path: |
             data/matches.sqlite3
             data/catalog
-          key: counter-note-v1-${{ runner.os }}-${{ hashFiles('config.json', 'counter_note/extract.py') }}-${{ github.run_id }}
+          key: counter-note-v1-${{ runner.os }}-${{ hashFiles('config.json', 'counter_note/extract.py', 'counter_note/choices.py') }}-${{ github.run_id }}
           restore-keys: |
-            counter-note-v1-${{ runner.os }}-${{ hashFiles('config.json', 'counter_note/extract.py') }}-
+            counter-note-v1-${{ runner.os }}-${{ hashFiles('config.json', 'counter_note/extract.py', 'counter_note/choices.py') }}-
       - name: Update Riot data when due
         env:
           RIOT_API_KEY: ${{ secrets.RIOT_API_KEY }}
@@ -92,7 +92,7 @@ jobs:
           path: |
             data/matches.sqlite3
             data/catalog
-          key: counter-note-v1-${{ runner.os }}-${{ hashFiles('config.json', 'counter_note/extract.py') }}-${{ github.run_id }}
+          key: counter-note-v1-${{ runner.os }}-${{ hashFiles('config.json', 'counter_note/extract.py', 'counter_note/choices.py') }}-${{ github.run_id }}
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -8,6 +8,8 @@ __pycache__/
 data/*.sqlite*
 data/*.lock
 data/catalog/item-*.json
+data/catalog/summoner-*.json
+data/catalog/runesReforged-*.json
 data/catalog/current.json
 data/catalog/champion-*.json
 !data/catalog/champion-16.19.1.json

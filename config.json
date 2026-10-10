@@ -16,6 +16,8 @@
   "min_matchup_games": 30,
   "min_level_observations": 30,
   "min_build_games": 10,
+  "min_comparison_games": 20,
+  "min_comparison_outcomes": 5,
   "fdr_alpha": 0.05,
   "fdr_method": "by",
   "starting_items_before_ms": 90000,

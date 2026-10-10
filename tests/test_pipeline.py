@@ -122,6 +122,27 @@ class PipelineTests(unittest.TestCase):
         details = read_json(self.root / "site" / public["detailRoot"] / "bottom-Tristana.json")
         self.assertEqual(details["Ashe"]["games"], 40)
         self.assertTrue(details["Ashe"]["early"])
+        self.assertEqual(details["Ashe"]["recommendations"]["features"]["runes"]["observedGames"], 0)
+        self.assertEqual(details["Ashe"]["recommendations"]["fdr"]["tests"], 0)
+
+    def test_optional_choice_catalogs_export_korean_names_and_official_images(self):
+        public = build_site(self.root)
+        self.assertEqual(public["choiceCatalogs"], {"runes": {}, "spells": {}})
+        write_json(self.root / "data/catalog/summoner-16.19.1.json", {"data": {"SummonerFlash": {"key": "4", "name": "점멸", "image": {"full": "SummonerFlash.png"}}}})
+        write_json(self.root / "data/catalog/runesReforged-16.19.1.json", [{"id": 8000, "name": "정밀", "icon": "style.png", "slots": [{"runes": [{"id": 8005, "name": "집중 공격", "icon": "perk.png"}]}]}])
+        public = build_site(self.root)
+        self.assertEqual(public["choiceCatalogs"]["spells"]["4"]["name"], "점멸")
+        self.assertEqual(public["choiceCatalogs"]["runes"]["8005"]["image"], "https://ddragon.leagueoflegends.com/cdn/img/perk.png")
+        self.assertEqual(public["comparison"]["minGames"], 20)
+        self.assertEqual(public["metadata"]["games"], 0)
+
+    def test_comparison_configuration_requires_positive_integers(self):
+        for key in ("min_comparison_games", "min_comparison_outcomes"):
+            for value in (0, -1, True, 1.5):
+                configuration = {**self.config, key: value}
+                write_json(self.root / "config.json", configuration)
+                with self.assertRaisesRegex(ValueError, key):
+                    load_config(self.root)
 
     def test_manual_changes_survive_rebuild_and_conflict_rejected(self):
         self.add_records()

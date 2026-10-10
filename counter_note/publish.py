@@ -6,7 +6,7 @@ import shutil
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from .catalog import cached_version, load_catalog, patch_of
+from .catalog import cached_version, load_catalog, load_choice_catalog, patch_of
 from .config import CATEGORIES, LANES, load_config, read_json, write_json
 from .statistics import aggregate
 from .storage import Store
@@ -131,6 +131,8 @@ def build_site(root):
     now = datetime.now(timezone.utc).isoformat()
     metadata = {"patch": patch, "dataDragonVersion": version, "publishedAt": now, "updatedAt": refresh.get("updatedAt") if refresh.get("patch") == patch else None, "games": games, "platform": config["platform"], "queue": config["queue"], "windowDays": config["lookback_days"], "since": datetime.fromtimestamp(since, timezone.utc).isoformat(), "minGames": config["min_matchup_games"], "minLevels": config["min_level_observations"], "minBuildGames": config["min_build_games"], "fdrMethod": config["fdr_method"], "fdrAlpha": config["fdr_alpha"], "limited": refresh.get("limited", False), "refreshHours": config["refresh_hours"], "coverage": "API로 수집한 랭크 경기 표본 · 서버 전체 경기 전수 아님", "buildDefinition": "시작: 90초 직전 보유 아이템, 코어: 신발·소모품 제외 완성 아이템 구매 순서", "manualPairs": sum(len(v) for v in overrides.get("matchups", {}).values())}
     payload = {"schemaVersion": 3, "metadata": metadata, "catalog": catalog, "items": item_catalog, "board": board, "matchupIndex": index, "pollSeconds": max(30, config["poll_seconds"]), "githubRepository": config["github_repository"]}
+    payload["choiceCatalogs"] = load_choice_catalog(root, version)
+    payload["comparison"] = {"minGames": config["min_comparison_games"], "minOutcomes": config["min_comparison_outcomes"], "features": ["start", "build", "runes", "spells", "skills"], "baseline": "같은 챔피언·라인·서버·큐·패치·기간의 다른 상대 경기"}
     digest = hashlib.sha256((safe_json(payload) + safe_json(details) + (root / "web" / "app.js").read_text(encoding="utf-8-sig") + (root / "web" / "app.css").read_text(encoding="utf-8-sig")).encode()).hexdigest()[:20]
     payload["revision"] = digest
     payload["detailRoot"] = f"data/releases/{digest}"

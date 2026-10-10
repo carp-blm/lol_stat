@@ -30,6 +30,10 @@ def load_config(root=ROOT):
             raise ValueError(f"{key}: 양의 정수가 필요합니다.")
     if value["retention_days"] < value["lookback_days"]:
         raise ValueError("retention_days는 lookback_days 이상이어야 합니다.")
+    for key, default in (("min_comparison_games", 20), ("min_comparison_outcomes", 5)):
+        value.setdefault(key, default)
+        if type(value[key]) is not int or value[key] <= 0:
+            raise ValueError(f"{key}: 양의 정수가 필요합니다.")
     if not 0 < value["fdr_alpha"] < 1 or value["fdr_method"] not in ("bh", "by"):
         raise ValueError("FDR 설정을 확인하세요.")
     if value["patch"] != "current" and not re.fullmatch(r"\d+\.\d+", value["patch"]):
